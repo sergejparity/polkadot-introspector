@@ -74,6 +74,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+
       - name: Test
         run: |
           ./scripts/ci/zombienet/zombie.sh setup
