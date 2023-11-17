@@ -109,13 +109,17 @@ jobs:
       - name: Build
         run: |
           time cargo build --release
-          ls -R
 
       - name: Archive aritfacts
         uses: actions/upload-artifact@v3
         with:
           name: polkadot-introspector
-          path: target/release/{polkadot-block-time,polkadot-jaeger,polkadot-kvdb,polkadot-parachain-tracer,polkadot-whois}
+          path: |
+            target/release/polkadot-block-time
+            target/release/polkadot-jaeger
+            target/release/polkadot-kvdb
+            target/release/polkadot-parachain-tracer
+            target/release/polkadot-whois
           retention-days: 1
 
 
