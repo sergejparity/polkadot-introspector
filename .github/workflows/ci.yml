@@ -40,7 +40,7 @@ jobs:
         run: echo "IMAGE=${{ env.IMAGE }}" >> $GITHUB_OUTPUT
 
 # lint
-  fmt:
+  lint:
     runs-on: ubuntu-latest
     needs: [set-image]
     container:
@@ -48,32 +48,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
       - name: fmt
         run: |
           time cargo +nightly fmt --all -- --check
 
-  clippy:
-    runs-on: ubuntu-latest
-    needs: [set-image]
-    container:
-      image: ${{ needs.set-image.outputs.IMAGE }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Clippy
         run: |
           time cargo clippy --all-targets -- -D warnings
-
-  check:
-    runs-on: ubuntu-latest
-    needs: [set-image]
-    container:
-      image: ${{ needs.set-image.outputs.IMAGE }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Check
         run:
