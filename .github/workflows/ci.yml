@@ -1,0 +1,75 @@
+name: continuous-integration
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths-ignore:
+      - '**/*.md'
+      - '.gitlab-ci.yml'
+      - 'CODEOWNERS'
+      - 'LICENSE'
+      - 'FILE_TEMPLATE'
+  push:
+    branches:
+      - master
+      - v[0-9]+.[0-9]+.*           # i.e. v1.0, v2.1rc1
+    tags:
+      - v*
+    paths-ignore:
+      - '**/*.md'
+      - '.gitlab-ci.yml'
+      - 'CODEOWNERS'
+      - 'LICENSE'
+      - 'FILE_TEMPLATE'
+
+jobs:
+# lint
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: fmt
+        run: |
+          time cargo +nightly fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Clippy
+        run: |
+          time cargo clippy --all-targets -- -D warnings
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check
+        run:
+          time cargo check --all-targets --workspace
+
+# # test
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+# # build
+#   build:
+
+#   build-docker:
+
+# # publish
+#   publish-docker:
+
+#   publish-docker-image-description:
