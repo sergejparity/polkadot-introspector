@@ -111,7 +111,7 @@ jobs:
           time cargo build --release
 
       - name: Archive aritfacts
-        uses: actions/upload-artifacts@v3
+        uses: actions/upload-artifact@v3
         with:
           name: polkadot-introspector
           path: target/release/{polkadot-block-time,polkadot-jaeger,polkadot-kvdb,polkadot-parachain-tracer,polkadot-whois}
