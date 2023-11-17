@@ -81,6 +81,11 @@ jobs:
 
       - name: Test
         run: |
+          rustup show
+          cargo --version
+          rustup +nightly show
+          cargo +nightly --version
+          bash --version
           ./scripts/ci/zombienet/zombie.sh setup
           ZOMBIE_WS_PORT=9900 ./scripts/ci/zombienet/zombie.sh run ./scripts/ci/zombienet/network.toml
           WS_URL=ws://127.0.0.1:9900 time cargo test --all-targets --workspace
