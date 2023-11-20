@@ -164,8 +164,8 @@ jobs:
             VCS_REF="${{ github.sha }}"
             build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           tags: |
-            ${{ IMAGE_NAME }}:latest
-            ${{ IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
 
 # # publish
