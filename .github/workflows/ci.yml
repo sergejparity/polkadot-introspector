@@ -148,6 +148,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: false
+          context: .
           file: ./scripts/ci/dockerfiles/polkadot-introspector_injected.Dockerfile
           build-args: |
             VCS_REF="${{ github.ref }}"
