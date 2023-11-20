@@ -147,11 +147,11 @@ jobs:
           context: .
           file: ./scripts/ci/dockerfiles/polkadot-introspector_injected.Dockerfile
           build-args: |
-            VCS_REF="${{ github.ref }}"
+            VCS_REF="${{ github.sha }}"
             build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           tags: |
             latest
-            ${{ github.ref }}
+            ${{ github.sha }}
       - name: Check image
         run: |
           docker images
