@@ -132,10 +132,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache
-        uses: Swatinem/rust-cache@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
         with:
-          cache-on-failure: true
+          name: polkadot-introspector
+
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          tags: latest
+
+      - name: Check image
+        run: |
+          docker images
+
 
 # # publish
 #   publish-docker:
