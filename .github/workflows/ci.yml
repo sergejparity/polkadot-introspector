@@ -137,6 +137,10 @@ jobs:
           name: polkadot-introspector
           path: ./artifacts
 
+      - name: Set permissions
+        run: |
+          chmod +x ./artifacts/*
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
