@@ -136,6 +136,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: polkadot-introspector
+          path: artifacts
 
       - name: Build Docker image
         uses: docker/build-push-action@v5
