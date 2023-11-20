@@ -165,9 +165,6 @@ jobs:
           tags: |
             latest
             ${{ github.sha }}
-      - name: Check image
-        run: |
-          docker images
 
 
 # # publish
