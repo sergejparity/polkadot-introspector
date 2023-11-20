@@ -22,6 +22,7 @@ on:
 
 env:
   IMAGE: paritytech/ci-unified:bullseye-1.71.0-v20230727
+  IMAGE_NAME: sergejparity/polkadot-introspector
   PUBLISH_IMAGE: false
 
 jobs:
@@ -163,8 +164,8 @@ jobs:
             VCS_REF="${{ github.sha }}"
             build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           tags: |
-            latest
-            ${{ github.sha }}
+            ${{ IMAGE_NAME }}:latest
+            ${{ IMAGE_NAME }}:${{ github.sha }}
 
 
 # # publish
