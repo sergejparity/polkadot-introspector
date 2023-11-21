@@ -124,7 +124,7 @@ jobs:
       - name: Check whether to publish Docker image
         id: publish-image
         if: ${{ github.ref_type == 'tag' }}
-        run: echo "env.PUBLISH_IMAGE=true" >> $GITHUB_OUTPUT
+        run: echo "PUBLISH_IMAGE=true" >> $GITHUB_ENV
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
