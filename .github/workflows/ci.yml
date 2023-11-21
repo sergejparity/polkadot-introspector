@@ -13,8 +13,10 @@ on:
       - 'v*'
 
 env:
+  DOCKERFILE: scripts/ci/dockerfiles/polkadot-introspector_injected.Dockerfile
   IMAGE: paritytech/ci-unified:bullseye-1.71.0-v20230727
   IMAGE_NAME: sergejparity/polkadot-introspector
+  IMAGE_TAG: STUB_TAG
   PUBLISH_IMAGE: false
 
 jobs:
@@ -122,7 +124,9 @@ jobs:
       - name: Check whether to publish Docker image
         id: publish-image
         if: ${{ github.ref_type == 'tag' }}
-        run: echo "PUBLISH_IMAGE=true" >> $GITHUB_ENV
+        run: |
+          echo "PUBLISH_IMAGE=true" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -149,10 +153,10 @@ jobs:
         with:
           push: ${{ env.PUBLISH_IMAGE }}
           context: .
-          file: ./scripts/ci/dockerfiles/polkadot-introspector_injected.Dockerfile
+          file: ${{ env.DOCKERFILE }}
           build-args: |
             VCS_REF="${{ github.sha }}"
             build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
