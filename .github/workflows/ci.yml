@@ -9,16 +9,8 @@ on:
       - 'LICENSE'
       - 'FILE_TEMPLATE'
   push:
-    branches:
-      - master
     tags:
       - v*
-    paths-ignore:
-      - '**/*.md'
-      - '.gitlab-ci.yml'
-      - 'CODEOWNERS'
-      - 'LICENSE'
-      - 'FILE_TEMPLATE'
 
 env:
   IMAGE: paritytech/ci-unified:bullseye-1.71.0-v20230727
@@ -131,7 +123,7 @@ jobs:
 
       - name: Check whether to publish Docker image
         id: publish-image
-        if: ${{ github.ref_protected && github.ref_type == 'tag' }}
+        if: ${{ github.ref_type == 'tag' }}
         run: echo "env.PUBLISH_IMAGE=true" >> $GITHUB_OUTPUT
 
       - name: Download artifacts
@@ -146,7 +138,7 @@ jobs:
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
-        if: ${{ github.ref_protected && github.ref_type == 'tag' }}
+        if: ${{ github.ref_type == 'tag' }}
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASS }}
