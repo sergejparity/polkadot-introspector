@@ -14,10 +14,10 @@ on:
 
 env:
   DOCKERFILE: scripts/ci/dockerfiles/polkadot-introspector_injected.Dockerfile
-  IMAGE: paritytech/ci-unified:bullseye-1.71.0-v20230727
+  CI_IMAGE: paritytech/ci-unified:bullseye-1.71.0-v20230727
   IMAGE_NAME: sergejparity/polkadot-introspector
   IMAGE_TAG: STUB_TAG
-  PUBLISH_IMAGE: false
+  PUSH_IMAGE: false # decision whether to push image will be taken at a later step
 
 jobs:
   set-image:
@@ -25,17 +25,17 @@ jobs:
     # This workaround sets the container image for each job using 'set-image' job output.
     runs-on: ubuntu-latest
     outputs:
-      IMAGE: ${{ steps.set_image.outputs.IMAGE }}
+      CI_IMAGE: ${{ steps.set_image.outputs.CI_IMAGE }}
     steps:
       - id: set_image
-        run: echo "IMAGE=${{ env.IMAGE }}" >> $GITHUB_OUTPUT
+        run: echo "CI_IMAGE=${{ env.CI_IMAGE }}" >> $GITHUB_OUTPUT
 
 # lint
   lint:
     runs-on: ubuntu-latest
     needs: [set-image]
     container:
-      image: ${{ needs.set-image.outputs.IMAGE }}
+      image: ${{ needs.set-image.outputs.CI_IMAGE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,12 +55,12 @@ jobs:
         run:
           time cargo check --all-targets --workspace
 
-# # test
+# test
   test:
     runs-on: ubuntu-latest
     needs: [set-image]
     container:
-      image: ${{ needs.set-image.outputs.IMAGE }}
+      image: ${{ needs.set-image.outputs.CI_IMAGE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,12 +82,12 @@ jobs:
           WS_URL=ws://127.0.0.1:9900 time cargo test --all-targets --workspace
           ./scripts/ci/zombienet/zombie.sh shutdown
 
-# # build
+# build
   build:
     runs-on: ubuntu-latest
     needs: [set-image]
     container:
-      image: ${{ needs.set-image.outputs.IMAGE }}
+      image: ${{ needs.set-image.outputs.CI_IMAGE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -113,8 +113,8 @@ jobs:
             target/release/polkadot-whois
           retention-days: 1
 
-
-  build-docker:
+# build/publish docker image
+  build-publish-docker:
     runs-on: ubuntu-latest
     needs: [set-image, build]
     steps:
@@ -122,10 +122,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check whether to publish Docker image
-        id: publish-image
         if: ${{ github.ref_type == 'tag' }}
         run: |
-          echo "PUBLISH_IMAGE=true" >> $GITHUB_ENV
+          echo "PUSH_IMAGE=true" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Download artifacts
@@ -148,10 +147,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
+      - name: Build/Push Docker image
         uses: docker/build-push-action@v5
         with:
-          push: ${{ env.PUBLISH_IMAGE }}
+          push: ${{ env.PUSH_IMAGE }}
           context: .
           file: ${{ env.DOCKERFILE }}
           build-args: |
